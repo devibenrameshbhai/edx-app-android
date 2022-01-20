@@ -77,6 +77,7 @@ import org.edx.mobile.module.storage.DownloadedVideoDeletedEvent;
 import org.edx.mobile.module.storage.IStorage;
 import org.edx.mobile.services.EdxCookieManager;
 import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.BrowserUtil;
 import org.edx.mobile.util.CalendarUtils;
 import org.edx.mobile.util.ConfigUtil;
@@ -958,9 +959,16 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SHOW_COURSE_UNIT_DETAIL && resultCode == Activity.RESULT_OK
                 && data != null) {
-            final CourseComponent outlineComp = courseManager.getComponentByIdFromAppLevelCache(
-                    courseData.getCourseId(), courseComponentId);
-            navigateToCourseUnit(data, courseData, outlineComp);
+            if (data.getBooleanExtra(AppConstants.COURSE_UPGRADED, false)) {
+                if (!isOnCourseOutline()) {
+                    requireActivity().setResult(resultCode, data);
+                    requireActivity().finish();
+                }
+            } else {
+                final CourseComponent outlineComp = courseManager.getComponentByIdFromAppLevelCache(
+                        courseData.getCourseId(), courseComponentId);
+                navigateToCourseUnit(data, courseData, outlineComp);
+            }
         }
     }
 

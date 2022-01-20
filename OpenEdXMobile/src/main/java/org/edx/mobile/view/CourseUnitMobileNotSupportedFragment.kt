@@ -1,5 +1,7 @@
 package org.edx.mobile.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +21,7 @@ import org.edx.mobile.inapppurchases.BillingProcessor
 import org.edx.mobile.inapppurchases.BillingProcessor.BillingFlowListeners
 import org.edx.mobile.model.api.AuthorizationDenialReason
 import org.edx.mobile.model.course.CourseComponent
+import org.edx.mobile.util.AppConstants
 import org.edx.mobile.util.BrowserUtil
 import org.edx.mobile.util.NonNullObserver
 import org.edx.mobile.view.dialog.AlertDialogFragment
@@ -208,10 +211,19 @@ class CourseUnitMobileNotSupportedFragment : CourseUnitFragment() {
             getString(R.string.title_upgrade_complete),
             getString(R.string.upgrade_success_message),
             getString(R.string.label_continue),
+            { _, _ -> navigateToCourseDashboard() },
             null,
             null,
-            null
+            false
         ).show(childFragmentManager, null)
+    }
+
+    private fun navigateToCourseDashboard() {
+        val data = Intent().also {
+            it.putExtra(AppConstants.COURSE_UPGRADED, true)
+        }
+        requireActivity().setResult(Activity.RESULT_OK, data)
+        requireActivity().finish()
     }
 
     override fun onResume() {
