@@ -17,6 +17,7 @@ import org.edx.mobile.extenstion.setVisibility
 import org.edx.mobile.http.HttpStatus
 import org.edx.mobile.http.HttpStatusException
 import org.edx.mobile.inapppurchases.BillingProcessor
+import org.edx.mobile.inapppurchases.CourseUpgradeListener
 import org.edx.mobile.inapppurchases.ProductManager
 import org.edx.mobile.module.analytics.Analytics
 import org.edx.mobile.util.NonNullObserver
@@ -25,7 +26,7 @@ import org.edx.mobile.viewModel.InAppPurchasesViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CourseModalDialogFragment : DialogFragment() {
+class CourseModalDialogFragment(private val listener: CourseUpgradeListener) : DialogFragment() {
 
     private lateinit var binding: DialogUpgradeFeaturesBinding
     private var courseId: String = ""
@@ -132,7 +133,9 @@ class CourseModalDialogFragment : DialogFragment() {
         })
 
         iapViewModel.executeOrderResponse.observe(viewLifecycleOwner, NonNullObserver {
-            showUpgradeCompleteDialog()
+            //showUpgradeCompleteDialog()
+            listener.onComplete()
+            dismiss()
         })
 
         iapViewModel.errorMessage.observe(viewLifecycleOwner, NonNullObserver { errorMsg ->
@@ -220,9 +223,10 @@ class CourseModalDialogFragment : DialogFragment() {
             courseId: String,
             courseName: String,
             price: String,
-            isSelfPaced: Boolean
+            isSelfPaced: Boolean,
+            listener: CourseUpgradeListener
         ): CourseModalDialogFragment {
-            val frag = CourseModalDialogFragment()
+            val frag = CourseModalDialogFragment(listener)
             val args = Bundle().apply {
                 putString(KEY_MODAL_PLATFORM, platformName)
                 putString(KEY_COURSE_ID, courseId)

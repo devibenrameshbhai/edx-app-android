@@ -9,6 +9,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
@@ -94,6 +95,16 @@ class BillingProcessor(val context: Context, val listener: BillingFlowListeners?
      */
     fun purchaseItem(activity: Activity, productId: String) {
         if (billingClient.isReady) {
+
+            //Todo This block of code is only for test purpose only have to remove before merging it.
+            billingClient.queryPurchasesAsync(
+                BillingClient.SkuType.INAPP
+            ) { _, purchases ->
+                if (purchases.size > 0) {
+                    consumePurchase(purchases[0].purchaseToken)
+                }
+            }
+
             querySyncDetails(productId,
                 SkuDetailsResponseListener { billingResult, skuDetailsList ->
                     logger.debug(
@@ -105,6 +116,14 @@ class BillingProcessor(val context: Context, val listener: BillingFlowListeners?
                     }
                 })
         }
+    }
+
+    private fun consumePurchase(purchaseToken: String) {
+        billingClient.consumeAsync(
+            ConsumeParams.newBuilder()
+                .setPurchaseToken(purchaseToken)
+                .build()
+        ) { billingResult, _ -> logger.debug(billingResult.responseCode.toString() + billingResult.debugMessage) }
     }
 
     /**

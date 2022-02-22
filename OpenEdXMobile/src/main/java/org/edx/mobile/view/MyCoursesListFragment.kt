@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dagger.hilt.android.AndroidEntryPoint
 import de.greenrobot.event.EventBus
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.edx.mobile.R
@@ -28,6 +27,7 @@ import org.edx.mobile.exception.AuthException
 import org.edx.mobile.http.HttpStatus
 import org.edx.mobile.http.HttpStatusException
 import org.edx.mobile.http.notifications.FullScreenErrorNotification
+import org.edx.mobile.inapppurchases.CourseUpgradeListener
 import org.edx.mobile.interfaces.RefreshListener
 import org.edx.mobile.logger.Logger
 import org.edx.mobile.model.api.EnrolledCoursesResponse
@@ -38,11 +38,13 @@ import org.edx.mobile.util.NetworkUtil
 import org.edx.mobile.util.UiUtils
 import org.edx.mobile.view.adapters.MyCoursesAdapter
 import org.edx.mobile.view.dialog.CourseModalDialogFragment
+import org.edx.mobile.view.dialog.FullScreenLoaderDialogFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
@@ -59,6 +61,7 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
     lateinit var loginAPI: LoginAPI
 
     private lateinit var errorNotification: FullScreenErrorNotification
+    private var fullScreenLoader = FullScreenLoaderDialogFragment()
     private lateinit var enrolledCoursesCall: Call<List<EnrolledCoursesResponse>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +94,13 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                         courseId,
                         courseName,
                         price,
-                        isSelfPaced
+                        isSelfPaced,
+                        object : CourseUpgradeListener {
+                            override fun onComplete() {
+                                fullScreenLoader.show(childFragmentManager, null)
+                                loadData(showProgress = false, fromCache = false)
+                            }
+                        }
                     ).show(childFragmentManager, CourseModalDialogFragment.TAG)
                 }
             }
@@ -193,6 +202,11 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                             showProgress = response.body()?.isEmpty() == true,
                             fromCache = false
                         )
+                    }
+                    if (fullScreenLoader.isAdded) {
+                        Timer("Delay", false).schedule(3000) {
+                            fullScreenLoader.dismiss()
+                        }
                     }
                 } else if (fromCache) { // Fetch latest data from server if cache call's response is unSuccessful
                     loadData(showProgress = true, fromCache = false)
