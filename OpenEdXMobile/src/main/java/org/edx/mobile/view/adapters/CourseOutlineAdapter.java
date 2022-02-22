@@ -24,6 +24,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.edx.mobile.R;
 import org.edx.mobile.core.IEdxEnvironment;
+import org.edx.mobile.inapppurchases.CourseUpgradeListener;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.AuthorizationDenialReason;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
@@ -84,11 +85,12 @@ public class CourseOutlineAdapter extends BaseAdapter {
     private IStorage storage;
     private EnrolledCoursesResponse courseData;
     private DownloadListener downloadListener;
+    private CourseUpgradeListener courseUpgradeListener;
     private boolean isVideoMode;
 
     public CourseOutlineAdapter(final Context context, final EnrolledCoursesResponse courseData,
                                 final IEdxEnvironment environment, DownloadListener listener,
-                                boolean isVideoMode, boolean isOnCourseOutline) {
+                                boolean isVideoMode, boolean isOnCourseOutline, CourseUpgradeListener courseUpgradeListener) {
         this.context = context;
         this.environment = environment;
         this.config = environment.getConfig();
@@ -97,6 +99,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         this.courseData = courseData;
         this.downloadListener = listener;
         this.isVideoMode = isVideoMode;
+        this.courseUpgradeListener = courseUpgradeListener;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         adapterData = new ArrayList();
         if (isOnCourseOutline && !isVideoMode) {
@@ -632,7 +635,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 courseData.getCourseId(),
                 courseData.getCourse().getName(),
                 courseData.getCourse().getPrice(),
-                courseData.getCourse().isSelfPaced())
+                courseData.getCourse().isSelfPaced(),
+                courseUpgradeListener)
                 .show(((AppCompatActivity) context).getSupportFragmentManager(),
                         CourseModalDialogFragment.TAG));
         upgradeBtnText.setText(R.string.value_prop_course_card_message);
