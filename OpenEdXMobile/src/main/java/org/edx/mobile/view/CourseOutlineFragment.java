@@ -87,7 +87,7 @@ import org.edx.mobile.util.UiUtils;
 import org.edx.mobile.view.adapters.CourseOutlineAdapter;
 import org.edx.mobile.view.common.TaskProgressCallback;
 import org.edx.mobile.view.dialog.AlertDialogFragment;
-import org.edx.mobile.view.dialog.FullScreenLoaderDialogFragment;
+import org.edx.mobile.view.dialog.FullscreenLoaderDialogFragment;
 import org.edx.mobile.view.dialog.VideoDownloadQualityDialogFragment;
 import org.edx.mobile.viewModel.CourseDateViewModel;
 
@@ -153,7 +153,7 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
     private String screenName;
     private AlertDialogFragment loaderDialog;
 
-    private final FullScreenLoaderDialogFragment fullScreenLoader = FullScreenLoaderDialogFragment.newInstance();
+    private final FullscreenLoaderDialogFragment fullscreenLoader = FullscreenLoaderDialogFragment.newInstance();
 
     public static Bundle makeArguments(@NonNull EnrolledCoursesResponse model,
                                        @Nullable String courseComponentId, boolean isVideosMode, @ScreenDef String screenName) {
@@ -416,8 +416,8 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
                 courseManager.addCourseDataInAppLevelCache(courseId, courseComponent);
                 loadData(validateCourseComponent(courseComponent));
                 swipeContainer.setRefreshing(false);
-                if (fullScreenLoader.isAdded())
-                    fullScreenLoader.dismiss();
+                if (fullscreenLoader.isAdded())
+                    fullscreenLoader.dismiss();
             }
 
             @Override
@@ -539,7 +539,7 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
                     isVideoMode, isOnCourseOutline, new CourseUpgradeListener() {
                 @Override
                 public void onComplete() {
-                    fullScreenLoader.show(getChildFragmentManager(), null);
+                    fullscreenLoader.show(getChildFragmentManager(), null);
                     //fetchCourseComponent();
                     courseData.setMode(EnrollmentMode.VERIFIED.toString());
                     getCourseComponentFromServer(false);

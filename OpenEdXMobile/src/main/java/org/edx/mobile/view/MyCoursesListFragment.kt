@@ -38,7 +38,7 @@ import org.edx.mobile.util.NetworkUtil
 import org.edx.mobile.util.UiUtils
 import org.edx.mobile.view.adapters.MyCoursesAdapter
 import org.edx.mobile.view.dialog.CourseModalDialogFragment
-import org.edx.mobile.view.dialog.FullScreenLoaderDialogFragment
+import org.edx.mobile.view.dialog.FullscreenLoaderDialogFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,7 +61,7 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
     lateinit var loginAPI: LoginAPI
 
     private lateinit var errorNotification: FullScreenErrorNotification
-    private var fullScreenLoader = FullScreenLoaderDialogFragment()
+    private var fullscreenLoader = FullscreenLoaderDialogFragment()
     private lateinit var enrolledCoursesCall: Call<List<EnrolledCoursesResponse>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +97,7 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                         isSelfPaced,
                         object : CourseUpgradeListener {
                             override fun onComplete() {
-                                fullScreenLoader.show(childFragmentManager, null)
+                                fullscreenLoader.show(childFragmentManager, null)
                                 loadData(showProgress = false, fromCache = false)
                             }
                         }
@@ -203,9 +203,9 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                             fromCache = false
                         )
                     }
-                    if (fullScreenLoader.isAdded) {
+                    if (fullscreenLoader.isAdded) {
                         Timer("Delay", false).schedule(3000) {
-                            fullScreenLoader.dismiss()
+                            fullscreenLoader.dismiss()
                         }
                     }
                 } else if (fromCache) { // Fetch latest data from server if cache call's response is unSuccessful

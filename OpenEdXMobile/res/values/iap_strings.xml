@@ -20,4 +20,9 @@
     <string name="email_subject_upgrade_error">Error upgrading course in app</string>
     <!-- Get Help button label -->
     <string name="label_get_help">Get Help</string>
+
+    <!-- Full Screen Loader -->
+    <string name="fullscreen_loader_unlocking">Unlocking</string>
+    <string name="fullscreen_loader_full_access">full access</string>
+    <string name="fullscreen_loader_to_your_course">to your course</string>
 </resources>
