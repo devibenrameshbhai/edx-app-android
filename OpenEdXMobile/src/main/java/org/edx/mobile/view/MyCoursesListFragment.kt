@@ -97,6 +97,7 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                         isSelfPaced,
                         object : CourseUpgradeListener {
                             override fun onComplete() {
+                                fullscreenLoader.isCancelable = false
                                 fullscreenLoader.show(childFragmentManager, null)
                                 loadData(showProgress = false, fromCache = false)
                             }

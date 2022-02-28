@@ -94,6 +94,8 @@ import org.edx.mobile.viewModel.CourseDateViewModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -417,7 +419,12 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
                 loadData(validateCourseComponent(courseComponent));
                 swipeContainer.setRefreshing(false);
                 if (fullscreenLoader.isAdded())
-                    fullscreenLoader.dismiss();
+                    new Timer("Delay", false).schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            fullscreenLoader.dismiss();
+                        }
+                    }, 3000);
             }
 
             @Override
@@ -539,8 +546,8 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
                     isVideoMode, isOnCourseOutline, new CourseUpgradeListener() {
                 @Override
                 public void onComplete() {
+                    fullscreenLoader.setCancelable(false);
                     fullscreenLoader.show(getChildFragmentManager(), null);
-                    //fetchCourseComponent();
                     courseData.setMode(EnrollmentMode.VERIFIED.toString());
                     getCourseComponentFromServer(false);
                 }
